@@ -1,0 +1,15 @@
+{
+  "short_name": "9606Capital",
+  "name": "9606 Capital Property Analyzer",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

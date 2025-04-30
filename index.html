@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>9606 Capital - Initializing...</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="manifest" href="manifest.json" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: auto
+#results {
+  display: block;
+  background-color: rgba(0, 0, 0, 0.7); /* BACKGROUND RESTORED */
+  color: #fff;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1rem;
+  padding: 20px;
+  width: 100%;
+  max-width: 90vw;
+  margin: 40px auto;
+  border-radius: 12px;
+  max-height: 90vh;
+  overflow-y: auto;         /* SCROLL ENABLED */
+  overflow-x: hidden;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  word-break: break-word;   /* CRITICAL */
+  line-height: 1.5;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+/* Ensure any <pre> blocks inside don't override styling */
+#results pre, #results code {
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+  background: none !important;
+  color: inherit !important;
+}
+
+@media screen and (max-width: 768px) {
+  #results {
+    font-size: 0.9rem;
+    padding: 16px;
+    margin: 20px auto;
+    max-width: 95vw;
+  }
+}
+  </style>
+</head>
+<body class="dark-mode">
+
+<!-- Theme Toggle Button -->
+<div id="theme-toggle" onclick="toggleTheme()">??</div>
+
+<!-- Boot Loader -->
+<div id="loader">
+  <img src="logo.png" alt="9606 Capital Logo" class="logo" />
+  <p id="boot-text">Booting Systems...</p>
+</div>
+
+<!-- Main App -->
+<div class="container hidden" id="main-content">
+  <h1 class="title">9606 Capital Property Analysis</h1>
+
+  <form id="property-form">
+    <input type="text" id="address" placeholder="Enter Property Address" required />
+    <input type="text" id="loopnet-url" placeholder="(Optional) Enter LoopNet URL" />
+    <button type="submit">Initiate Scan</button>
+  </form>
+
+  <p id="optional-note">(Optional) LoopNet URL highly recommended for deeper scan accuracy.</p>
+
+  <!-- Progress and Scanning Words Section -->
+  <div id="loading-section" class="hidden">
+    <div id="progress-bar-container">
+      <div id="progress-bar"></div>
+    </div>
+    <div id="scan-text"></div>
+  </div>
+
+  <div id="results"></div>
+</div>
+
+<!-- Cinematic Background -->
+<canvas id="grid-canvas"></canvas>
+<canvas id="beam-canvas"></canvas>
+
+<script src="app.js"></script>
+<script>
+// Cinematic Boot Transition
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('fade-out');
+    setTimeout(() => {
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('main-content').classList.remove('hidden');
+      document.getElementById('main-content').classList.add('fade-in');
+    }, 1200);
+  }, 3000);
+});
+
+// Theme Toggle
+function toggleTheme() {
+  const body = document.body;
+  body.classList.toggle('light-mode');
+  const toggle = document.getElementById('theme-toggle');
+  toggle.textContent = body.classList.contains('light-mode') ? '??' : '??';
+}
+</script>
+
+</body>
+</html>
