@@ -225,7 +225,7 @@ form.addEventListener('submit', async (e) => {
     document.getElementById('download-btn').addEventListener('click', () => {
       const blob = new Blob([resultText], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
-      const a = document primatesElement('a');
+      const a = document.createElement('a');
       a.href = url;
       a.download = `property_analysis_${new Date().toISOString().split('T')[0]}.txt`;
       a.click();
