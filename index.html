@@ -12,47 +12,93 @@
       height: 100%;
       margin: 0;
       overflow: auto
-#results {
-  display: block;
-  background-color: rgba(0, 0, 0, 0.7); /* BACKGROUND RESTORED */
-  color: #fff;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 1rem;
-  padding: 20px;
-  width: 100%;
-  max-width: 90vw;
-  margin: 40px auto;
-  border-radius: 12px;
-  max-height: 90vh;
-  overflow-y: auto;         /* SCROLL ENABLED */
-  overflow-x: hidden;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  word-break: break-word;   /* CRITICAL */
-  line-height: 1.5;
-  text-align: left;
-  box-sizing: border-box;
-}
+    }
+    #results {
+      display: block;
+      background-color: rgba(0, 0, 0, 0.7); /* BACKGROUND RESTORED */
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      padding: 20px;
+      width: 100%;
+      max-width: 90vw;
+      margin: 40px auto;
+      border-radius: 12px;
+      max-height: 90vh;
+      overflow-y: auto;         /* SCROLL ENABLED */
+      overflow-x: hidden;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      word-break: break-word;   /* CRITICAL */
+      line-height: 1.5;
+      text-align: left;
+      box-sizing: border-box;
+    }
 
-/* Ensure any <pre> blocks inside don't override styling */
-#results pre, #results code {
-  white-space: pre-wrap !important;
-  word-break: break-word !important;
-  background: none !important;
-  color: inherit !important;
-}
+    /* Ensure any <pre> blocks inside don't override styling */
+    #results pre, #results code {
+      white-space: pre-wrap !important;
+      word-break: break-word !important;
+      background: none !important;
+      color: inherit !important;
+    }
 
-@media screen and (max-width: 768px) {
-  #results {
-    font-size: 0.9rem;
-    padding: 16px;
-    margin: 20px auto;
-    max-width: 95vw;
-  }
-}
+    @media screen and (max-width: 768px) {
+      #results {
+        font-size: 0.9rem;
+        padding: 16px;
+        margin: 20px auto;
+        max-width: 95vw;
+      }
+    }
+
+    /* Add to Home Screen Banner Styling */
+    #pwa-banner {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(255, 44, 44, 0.9);
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      z-index: 10001;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    #pwa-banner p {
+      margin: 0;
+      padding: 0;
+    }
+
+    #pwa-banner .close-btn {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: #fff;
+    }
+
+    @media screen and (max-width: 768px) {
+      #pwa-banner {
+        font-size: 0.9rem;
+        padding: 10px;
+      }
+    }
   </style>
 </head>
 <body class="dark-mode">
+
+<!-- Add to Home Screen Banner -->
+<div id="pwa-banner">
+  <p id="pwa-message">Add to Home Screen for best performance. <span id="pwa-instructions"></span></p>
+  <span class="close-btn" onclick="document.getElementById('pwa-banner').style.display='none'">&times;</span>
+</div>
 
 <!-- Theme Toggle Button -->
 <div id="theme-toggle" onclick="toggleTheme()">🌙</div>
@@ -111,7 +157,28 @@ function toggleTheme() {
   const toggle = document.getElementById('theme-toggle');
   toggle.textContent = body.classList.contains('light-mode') ? '🌞' : '🌙';
 }
+
+// Add to Home Screen Prompt Logic
+window.addEventListener('load', () => {
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  const banner = document.getElementById('pwa-banner');
+  const instructions = document.getElementById('pwa-instructions');
+  const userAgent = navigator.userAgent.toLowerCase();
+  const isIOS = /iphone|ipad|ipod/.test(userAgent);
+  const isAndroid = /android/.test(userAgent);
+
+  if (!isStandalone) {
+    banner.style.display = 'block';
+    if (isIOS) {
+      instructions.textContent = 'Tap the Share icon and select "Add to Home Screen".';
+    } else if (isAndroid) {
+      instructions.textContent = 'Tap the menu (⋮) and select "Add to Home screen".';
+    } else {
+      instructions.textContent = 'Add this app to your home screen for the best experience.';
+    }
+  }
+});
 </script>
 
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'939038916e07b074',t:'MTc0NjExMjM4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
