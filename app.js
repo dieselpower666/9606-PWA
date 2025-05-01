@@ -141,8 +141,6 @@ form.addEventListener('submit', async (e) => {
 
   form.style.display = "none";
   loadingSection.classList.remove('hidden');
-  resultsDiv.style.display = 'none';
-  resultsButtons.style.display = 'none';
 
   let progress = 0;
   let phraseIndex = 0;
@@ -202,9 +200,9 @@ form.addEventListener('submit', async (e) => {
     setTimeout(() => {
       loadingSection.style.display = "none";
       resultsDiv.innerHTML = `<div class="ai-output"><pre>${sanitizedText}</pre></div>`;
-      resultsDiv.style.display = 'block'; // make sure this shows the box;
+      resultsDiv.style.display = 'block'; // Show the results
       resultsButtons.style.display = 'block'; // Show the buttons
-      resultsDiv.scrollTop = 0; // scrolls to top automatically;
+      resultsDiv.scrollTop = 0; // Scrolls to top automatically
       resultsDiv.classList.add('fade-in');
     }, 1000);
 
@@ -223,6 +221,7 @@ form.addEventListener('submit', async (e) => {
 // Reset Form Function
 function resetForm() {
   form.style.display = "block";
+  loadingSection.style.display = "none";
   resultsDiv.style.display = "none";
   resultsButtons.style.display = "none";
   document.getElementById('address').value = '';
