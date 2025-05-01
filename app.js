@@ -147,6 +147,8 @@ form.addEventListener('submit', async (e) => {
   // Reset UI state
   form.style.display = "none";
   loadingSection.classList.remove('hidden');
+  loadingSection.style.display = 'block'; // Ensure visibility
+  loadingSection.offsetHeight; // Force reflow
   resultsDiv.style.display = 'none';
   resultsDiv.innerHTML = '';
 
@@ -223,7 +225,7 @@ form.addEventListener('submit', async (e) => {
     document.getElementById('download-btn').addEventListener('click', () => {
       const blob = new Blob([resultText], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document primatesElement('a');
       a.href = url;
       a.download = `property_analysis_${new Date().toISOString().split('T')[0]}.txt`;
       a.click();
@@ -237,6 +239,7 @@ form.addEventListener('submit', async (e) => {
       resultsDiv.style.display = 'none';
       resultsDiv.innerHTML = '';
       loadingSection.classList.add('hidden');
+      loadingSection.style.display = 'none'; // Ensure hidden
       progressBar.style.width = '0%';
       scanText.textContent = '';
     });
@@ -266,6 +269,7 @@ form.addEventListener('submit', async (e) => {
       resultsDiv.style.display = 'none';
       resultsDiv.innerHTML = '';
       loadingSection.classList.add('hidden');
+      loadingSection.style.display = 'none'; // Ensure hidden
       progressBar.style.width = '0%';
       scanText.textContent = '';
     });
