@@ -119,6 +119,7 @@ const loadingSection = document.getElementById('loading-section');
 const progressBar = document.getElementById('progress-bar');
 const scanText = document.getElementById('scan-text');
 const resultsDiv = document.getElementById('results');
+const resultsButtons = document.getElementById('results-buttons');
 
 const scanningPhrases = [
   "Analyzing property blueprint...",
@@ -129,6 +130,9 @@ const scanningPhrases = [
   "Extracting zoning information..."
 ];
 
+// Store the raw results for downloading
+let rawResults = '';
+
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -137,6 +141,8 @@ form.addEventListener('submit', async (e) => {
 
   form.style.display = "none";
   loadingSection.classList.remove('hidden');
+  resultsDiv.style.display = 'none';
+  resultsButtons.style.display = 'none';
 
   let progress = 0;
   let phraseIndex = 0;
@@ -155,7 +161,7 @@ form.addEventListener('submit', async (e) => {
   progressInterval = setInterval(updateProgress, 500);
 
   try {
-    const response = await fetch('https://alastor-n8n.onrender.com/webhook/Property_Analysis_AI_Workflow', {
+    const response = await fetch('https://alastor-n8n.onrender.com/webhook-test/Property_Analysis_AI_Workflow', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -178,13 +184,16 @@ form.addEventListener('submit', async (e) => {
       resultText = await response.text();
     }
 
+    // Store raw results for download
+    rawResults = resultText;
+
     // Sanitize the result to prevent XSS and ensure proper display
     const sanitizedText = resultText
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+      .replace(/&/g, "&")
+      .replace(/</g, "<")
+      .replace(/>/g, ">")
+      .replace(/"/g, """)
+      .replace(/'/g, "'");
 
     clearInterval(progressInterval);
     progressBar.style.width = '100%';
@@ -194,6 +203,7 @@ form.addEventListener('submit', async (e) => {
       loadingSection.style.display = "none";
       resultsDiv.innerHTML = `<div class="ai-output"><pre>${sanitizedText}</pre></div>`;
       resultsDiv.style.display = 'block'; // make sure this shows the box;
+      resultsButtons.style.display = 'block'; // Show the buttons
       resultsDiv.scrollTop = 0; // scrolls to top automatically;
       resultsDiv.classList.add('fade-in');
     }, 1000);
@@ -204,7 +214,48 @@ form.addEventListener('submit', async (e) => {
     scanText.textContent = "Error occurred: Unable to display analysis. Please try again.";
     resultsDiv.innerHTML = `<div class="ai-output"><pre>Error: ${error.message}</pre></div>`;
     resultsDiv.style.display = 'block';
+    resultsButtons.style.display = 'block';
     resultsDiv.scrollTop = 0;
     resultsDiv.classList.add('fade-in');
   }
 });
+
+// Reset Form Function
+function resetForm() {
+  form.style.display = "block";
+  resultsDiv.style.display = "none";
+  resultsButtons.style.display = "none";
+  document.getElementById('address').value = '';
+  document.getElementById('loopnet-url').value = '';
+  rawResults = '';
+}
+
+// Download Results Function
+function downloadResults() {
+  if (!rawResults) {
+    alert("No results available to download.");
+    return;
+  }
+
+  const address = document.getElementById('address').value || 'unknown_property';
+  const formattedAddress = address.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const filename = `9606_Capital_Analysis_${formattedAddress}_${timestamp}.txt`;
+
+  // Create investor-ready content
+  const content = `===== 9606 Capital Property Analysis Report =====\n\n` +
+                 `Property Address: ${address}\n` +
+                 `Generated On: ${new Date().toISOString()}\n\n` +
+                 `Analysis Results:\n${rawResults}\n\n` +
+                 `===== End of Report =====`;
+
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url);
+}
