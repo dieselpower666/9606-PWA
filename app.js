@@ -144,8 +144,11 @@ form.addEventListener('submit', async (e) => {
   const address = document.getElementById('address').value;
   const loopnetUrl = document.getElementById('loopnet-url')?.value || '';
 
+  // Reset UI state
   form.style.display = "none";
   loadingSection.classList.remove('hidden');
+  resultsDiv.style.display = 'none';
+  resultsDiv.innerHTML = '';
 
   let progress = 0;
   let phraseIndex = 0;
@@ -164,20 +167,21 @@ form.addEventListener('submit', async (e) => {
   progressInterval = setInterval(updateProgress, 500);
 
   try {
-    const response = await fetch('https://alastor-n8n.onrender.com/webhook-test/Property_Analysis_AI_Workflow', {
+    const response = await fetch('https://alastor-n8n.onrender.com/webhook/Property_Analysis_AI_Workflow', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         property_address: address,
         listing_url: loopnetUrl
-      })
+      }),
+      timeout: 30000 // Add a timeout to prevent hanging
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      throw new Error(`Webhook failed with status: ${response.status}`);
     }
 
-    // Try to parse the response as JSON first
+    // Ensure the response is fully processed before proceeding
     let resultText;
     const contentType = response.headers.get('content-type');
     if (contentType && contentType.includes('application/json')) {
@@ -195,50 +199,56 @@ form.addEventListener('submit', async (e) => {
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
 
+    // Complete the progress bar
     clearInterval(progressInterval);
     progressBar.style.width = '100%';
     scanText.textContent = "Analysis Complete ✅";
 
-    setTimeout(() => {
-      loadingSection.style.display = "none";
-      resultsDiv.innerHTML = `
-        <div class="ai-output"><pre>${sanitizedText}</pre></div>
-        <div class="button-container">
-          <button id="download-btn" class="btn">Download Results</button>
-          <button id="reset-btn" class="btn">Reset</button>
-        </div>
-      `;
-      resultsDiv.style.display = 'block';
-      resultsDiv.scrollTop = 0;
-      resultsDiv.classList.add('fade-in');
+    // Wait for the progress bar to finish before showing results
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Download button handler
-      document.getElementById('download-btn').addEventListener('click', () => {
-        const blob = new Blob([resultText], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `property_analysis_${new Date().toISOString().split('T')[0]}.txt`;
-        a.click();
-        URL.revokeObjectURL(url);
-      });
+    loadingSection.style.display = "none";
+    resultsDiv.innerHTML = `
+      <div class="ai-output"><pre>${sanitizedText}</pre></div>
+      <div class="button-container">
+        <button id="download-btn" class="btn">Download Results</button>
+        <button id="reset-btn" class="btn">Reset</button>
+      </div>
+    `;
+    resultsDiv.style.display = 'block';
+    resultsDiv.scrollTop = 0;
+    resultsDiv.classList.add('fade-in');
 
-      // Reset button handler
-      document.getElementById('reset-btn').addEventListener('click', () => {
-        form.reset();
-        form.style.display = 'block';
-        resultsDiv.style.display = 'none';
-        resultsDiv.innerHTML = '';
-        loadingSection.classList.add('hidden');
-        progressBar.style.width = '0%';
-        scanText.textContent = '';
-      });
-    }, 1000);
+    // Download button handler
+    document.getElementById('download-btn').addEventListener('click', () => {
+      const blob = new Blob([resultText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `property_analysis_${new Date().toISOString().split('T')[0]}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Reset button handler
+    document.getElementById('reset-btn').addEventListener('click', () => {
+      form.reset();
+      form.style.display = 'block';
+      resultsDiv.style.display = 'none';
+      resultsDiv.innerHTML = '';
+      loadingSection.classList.add('hidden');
+      progressBar.style.width = '0%';
+      scanText.textContent = '';
+    });
 
   } catch (error) {
     clearInterval(progressInterval);
-    console.error("Failed to fetch or display webhook response:", error);
-    scanText.textContent = "Error occurred: Unable to display analysis. Please try again.";
+    progressBar.style.width = '100%';
+    scanText.textContent = "Error occurred: Webhook request failed. Please try again.";
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    loadingSection.style.display = "none";
     resultsDiv.innerHTML = `
       <div class="ai-output"><pre>Error: ${error.message}</pre></div>
       <div class="button-container">
