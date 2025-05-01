@@ -201,19 +201,63 @@ form.addEventListener('submit', async (e) => {
 
     setTimeout(() => {
       loadingSection.style.display = "none";
-      resultsDiv.innerHTML = `<div class="ai-output"><pre>${sanitizedText}</pre></div>`;
-      resultsDiv.style.display = 'block'; // make sure this shows the box;
-      resultsDiv.scrollTop = 0; // scrolls to top automatically;
+      resultsDiv.innerHTML = `
+        <div class="ai-output"><pre>${sanitizedText}</pre></div>
+        <div class="button-container">
+          <button id="download-btn" class="btn">Download Results</button>
+          <button id="reset-btn" class="btn">Reset</button>
+        </div>
+      `;
+      resultsDiv.style.display = 'block';
+      resultsDiv.scrollTop = 0;
       resultsDiv.classList.add('fade-in');
+
+      // Download button handler
+      document.getElementById('download-btn').addEventListener('click', () => {
+        const blob = new Blob([resultText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `property_analysis_${new Date().toISOString().split('T')[0]}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      // Reset button handler
+      document.getElementById('reset-btn').addEventListener('click', () => {
+        form.reset();
+        form.style.display = 'block';
+        resultsDiv.style.display = 'none';
+        resultsDiv.innerHTML = '';
+        loadingSection.classList.add('hidden');
+        progressBar.style.width = '0%';
+        scanText.textContent = '';
+      });
     }, 1000);
 
   } catch (error) {
     clearInterval(progressInterval);
     console.error("Failed to fetch or display webhook response:", error);
     scanText.textContent = "Error occurred: Unable to display analysis. Please try again.";
-    resultsDiv.innerHTML = `<div class="ai-output"><pre>Error: ${error.message}</pre></div>`;
+    resultsDiv.innerHTML = `
+      <div class="ai-output"><pre>Error: ${error.message}</pre></div>
+      <div class="button-container">
+        <button id="reset-btn" class="btn">Reset</button>
+      </div>
+    `;
     resultsDiv.style.display = 'block';
     resultsDiv.scrollTop = 0;
     resultsDiv.classList.add('fade-in');
+
+    // Reset button handler for error case
+    document.getElementById('reset-btn').addEventListener('click', () => {
+      form.reset();
+      form.style.display = 'block';
+      resultsDiv.style.display = 'none';
+      resultsDiv.innerHTML = '';
+      loadingSection.classList.add('hidden');
+      progressBar.style.width = '0%';
+      scanText.textContent = '';
+    });
   }
 });
