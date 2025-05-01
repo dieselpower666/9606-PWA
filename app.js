@@ -1,15 +1,28 @@
 // Cinematic Background Setup
 const gridCanvas = document.getElementById('grid-canvas');
-const gridCtx = gridCanvas.getContext('2d');
+const gridCtx = gridCanvas ? gridCanvas.getContext('2d') : null;
 
 const beamCanvas = document.getElementById('beam-canvas');
-const beamCtx = beamCanvas.getContext('2d');
+const beamCtx = beamCanvas ? beamCanvas.getContext('2d') : null;
+
+// Debugging: Check if canvases are loaded
+if (!gridCanvas || !gridCtx) {
+  console.error("Grid canvas or context not found.");
+}
+if (!beamCanvas || !beamCtx) {
+  console.error("Beam canvas or context not found.");
+}
 
 function resizeCanvas() {
-  gridCanvas.width = window.innerWidth;
-  gridCanvas.height = window.innerHeight;
-  beamCanvas.width = window.innerWidth;
-  beamCanvas.height = window.innerHeight;
+  if (gridCanvas && beamCanvas) {
+    gridCanvas.width = window.innerWidth;
+    gridCanvas.height = window.innerHeight;
+    beamCanvas.width = window.innerWidth;
+    beamCanvas.height = window.innerHeight;
+    console.log("Canvas resized to:", gridCanvas.width, "x", gridCanvas.height);
+  } else {
+    console.error("Cannot resize canvas: Canvas elements not found.");
+  }
 }
 
 resizeCanvas();
@@ -21,6 +34,10 @@ let gridOffset = 0;
 let beams = [];
 
 function initializeBeams() {
+  if (!beamCanvas) {
+    console.error("Cannot initialize beams: Beam canvas not found.");
+    return;
+  }
   beams = [];
   for (let i = 0; i < 20; i++) {
     beams.push({
@@ -40,9 +57,14 @@ function initializeBeams() {
       currentAlpha: 0
     });
   }
+  console.log("Beams initialized:", beams.length);
 }
 
 function drawGrid() {
+  if (!gridCtx || !gridCanvas) {
+    console.error("Cannot draw grid: Grid context or canvas not found.");
+    return;
+  }
   gridCtx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
 
   gridCtx.strokeStyle = document.body.classList.contains('light-mode') 
@@ -63,6 +85,10 @@ function drawGrid() {
 }
 
 function drawBeams() {
+  if (!beamCtx || !beamCanvas) {
+    console.error("Cannot draw beams: Beam context or canvas not found.");
+    return;
+  }
   beamCtx.clearRect(0, 0, beamCanvas.width, beamCanvas.height);
 
   beams.forEach(beam => {
@@ -91,15 +117,23 @@ function drawBeams() {
 }
 
 function animate() {
-  gridOffset += 0.05;
-  drawGrid();
-  drawBeams();
-  requestAnimationFrame(animate);
+  try {
+    gridOffset += 0.05;
+    drawGrid();
+    drawBeams();
+    requestAnimationFrame(animate);
+  } catch (error) {
+    console.error("Error in animation loop:", error);
+  }
 }
 
 // INITIALIZE
-initializeBeams();
-animate();
+try {
+  initializeBeams();
+  animate();
+} catch (error) {
+  console.error("Failed to initialize cinematic background:", error);
+}
 
 // THEME TOGGLE
 function toggleTheme() {
