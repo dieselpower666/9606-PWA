@@ -90,6 +90,50 @@
         padding: 10px;
       }
     }
+
+    /* Reset and Download Buttons Styling */
+    #results-buttons {
+      display: none; /* Hidden until results are shown */
+      text-align: center;
+      margin: 20px auto;
+      max-width: 90vw;
+    }
+
+    #results-buttons button {
+      padding: 10px 20px;
+      font-size: 18px;
+      margin: 0 10px;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.5s;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    #reset-btn {
+      background: linear-gradient(45deg, #FF2C2C, #FF4C4C);
+    }
+
+    #reset-btn:hover {
+      background: linear-gradient(45deg, #FF4C4C, #FF2C2C);
+    }
+
+    #download-btn {
+      background: linear-gradient(45deg, #4CAF50, #66BB6A);
+    }
+
+    #download-btn:hover {
+      background: linear-gradient(45deg, #66BB6A, #4CAF50);
+    }
+
+    @media screen and (max-width: 768px) {
+      #results-buttons button {
+        font-size: 0.9rem;
+        padding: 8px 16px;
+        margin: 5px;
+      }
+    }
   </style>
 </head>
 <body class="dark-mode">
@@ -97,7 +141,7 @@
 <!-- Add to Home Screen Banner -->
 <div id="pwa-banner">
   <p id="pwa-message">Add to Home Screen for best performance. <span id="pwa-instructions"></span></p>
-  <span class="close-btn" onclick="document.getElementById('pwa-banner').style.display='none'">&times;</span>
+  <span class="close-btn" onclick="document.getElementById('pwa-banner').style.display='none'">×</span>
 </div>
 
 <!-- Theme Toggle Button -->
@@ -130,6 +174,12 @@
   </div>
 
   <div id="results"></div>
+
+  <!-- Reset and Download Buttons -->
+  <div id="results-buttons">
+    <button id="reset-btn" onclick="resetForm()">Reset Search</button>
+    <button id="download-btn" onclick="downloadResults()">Download Results</button>
+  </div>
 </div>
 
 <!-- Cinematic Background -->
