@@ -134,6 +134,17 @@
         margin: 5px;
       }
     }
+
+    /* Ensure Canvas Visibility */
+    canvas#grid-canvas, canvas#beam-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      display: block !important; /* Ensure canvas is not hidden */
+    }
   </style>
 </head>
 <body class="dark-mode">
