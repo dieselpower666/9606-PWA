@@ -164,14 +164,35 @@ form.addEventListener('submit', async (e) => {
       })
     });
 
-    const resultText = await response.text();
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    // Try to parse the response as JSON first
+    let resultText;
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      const jsonData = await response.json();
+      resultText = JSON.stringify(jsonData, null, 2); // Pretty-print JSON
+    } else {
+      resultText = await response.text();
+    }
+
+    // Sanitize the result to prevent XSS and ensure proper display
+    const sanitizedText = resultText
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+
     clearInterval(progressInterval);
     progressBar.style.width = '100%';
     scanText.textContent = "Analysis Complete ✅";
 
     setTimeout(() => {
       loadingSection.style.display = "none";
-      resultsDiv.innerHTML = `<div class="ai-output"><pre>${resultText}</pre></div>`;
+      resultsDiv.innerHTML = `<div class="ai-output"><pre>${sanitizedText}</pre></div>`;
       resultsDiv.style.display = 'block'; // make sure this shows the box;
       resultsDiv.scrollTop = 0; // scrolls to top automatically;
       resultsDiv.classList.add('fade-in');
@@ -179,7 +200,11 @@ form.addEventListener('submit', async (e) => {
 
   } catch (error) {
     clearInterval(progressInterval);
-    console.error("Failed to send property data:", error);
-    scanText.textContent = "Error occurred. Please try again.";
+    console.error("Failed to fetch or display webhook response:", error);
+    scanText.textContent = "Error occurred: Unable to display analysis. Please try again.";
+    resultsDiv.innerHTML = `<div class="ai-output"><pre>Error: ${error.message}</pre></div>`;
+    resultsDiv.style.display = 'block';
+    resultsDiv.scrollTop = 0;
+    resultsDiv.classList.add('fade-in');
   }
 });
