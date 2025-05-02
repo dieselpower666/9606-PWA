@@ -144,11 +144,23 @@ form.addEventListener('submit', async (e) => {
   const address = document.getElementById('address').value;
   const loopnetUrl = document.getElementById('loopnet-url')?.value || '';
 
+  // ✅ Address validation inserted here
+  const addressPattern = /^[\d\w\s\.,#\-]+$/;
+  if (!address || !addressPattern.test(address.trim())) {
+    alert("Please enter a valid property address.");
+    form.style.display = 'block';
+    loadingSection.classList.add('hidden');
+    loadingSection.style.display = 'none';
+    progressBar.style.width = '0%';
+    scanText.textContent = '';
+    return;
+  }
+
   // Reset UI state
   form.style.display = "none";
   loadingSection.classList.remove('hidden');
-  loadingSection.style.display = 'block'; // Ensure visibility
-  loadingSection.offsetHeight; // Force reflow
+  loadingSection.style.display = 'block';
+  loadingSection.offsetHeight;
   resultsDiv.style.display = 'none';
   resultsDiv.innerHTML = '';
 
@@ -176,24 +188,22 @@ form.addEventListener('submit', async (e) => {
         property_address: address,
         listing_url: loopnetUrl
       }),
-      timeout: 30000 // Add a timeout to prevent hanging
+      timeout: 30000
     });
 
     if (!response.ok) {
       throw new Error(`Webhook failed with status: ${response.status}`);
     }
 
-    // Ensure the response is fully processed before proceeding
     let resultText;
     const contentType = response.headers.get('content-type');
     if (contentType && contentType.includes('application/json')) {
       const jsonData = await response.json();
-      resultText = JSON.stringify(jsonData, null, 2); // Pretty-print JSON
+      resultText = JSON.stringify(jsonData, null, 2);
     } else {
       resultText = await response.text();
     }
 
-    // Sanitize the result to prevent XSS and ensure proper display
     const sanitizedText = resultText
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
@@ -201,12 +211,10 @@ form.addEventListener('submit', async (e) => {
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
 
-    // Complete the progress bar
     clearInterval(progressInterval);
     progressBar.style.width = '100%';
     scanText.textContent = "Analysis Complete ✅";
 
-    // Wait for the progress bar to finish before showing results
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     loadingSection.style.display = "none";
@@ -221,7 +229,6 @@ form.addEventListener('submit', async (e) => {
     resultsDiv.scrollTop = 0;
     resultsDiv.classList.add('fade-in');
 
-    // Download button handler
     document.getElementById('download-btn').addEventListener('click', () => {
       const blob = new Blob([resultText], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
@@ -232,14 +239,13 @@ form.addEventListener('submit', async (e) => {
       URL.revokeObjectURL(url);
     });
 
-    // Reset button handler
     document.getElementById('reset-btn').addEventListener('click', () => {
       form.reset();
       form.style.display = 'block';
       resultsDiv.style.display = 'none';
       resultsDiv.innerHTML = '';
       loadingSection.classList.add('hidden');
-      loadingSection.style.display = 'none'; // Ensure hidden
+      loadingSection.style.display = 'none';
       progressBar.style.width = '0%';
       scanText.textContent = '';
     });
@@ -262,14 +268,13 @@ form.addEventListener('submit', async (e) => {
     resultsDiv.scrollTop = 0;
     resultsDiv.classList.add('fade-in');
 
-    // Reset button handler for error case
     document.getElementById('reset-btn').addEventListener('click', () => {
       form.reset();
       form.style.display = 'block';
       resultsDiv.style.display = 'none';
       resultsDiv.innerHTML = '';
       loadingSection.classList.add('hidden');
-      loadingSection.style.display = 'none'; // Ensure hidden
+      loadingSection.style.display = 'none';
       progressBar.style.width = '0%';
       scanText.textContent = '';
     });
