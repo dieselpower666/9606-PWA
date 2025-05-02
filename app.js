@@ -1,3 +1,4 @@
+```javascript
 // Cinematic Background Setup
 const gridCanvas = document.getElementById('grid-canvas');
 const gridCtx = gridCanvas.getContext('2d');
@@ -113,6 +114,22 @@ function toggleTheme() {
   initializeBeams();
 }
 
+// Property Address Validation Function
+function validatePropertyAddress(address) {
+  // Check if address is non-empty and has basic format (number + street name)
+  if (!address || address.trim() === "") {
+    return { valid: false, error: "Address cannot be empty" };
+  }
+
+  // Basic regex: At least a number followed by text (e.g., "123 Main St")
+  const addressRegex = /^\d+\s+[A-Za-z\s]+/;
+  if (!addressRegex.test(address.trim())) {
+    return { valid: false, error: "Invalid address format. Please include street number and name (e.g., 123 Main St)" };
+  }
+
+  return { valid: true };
+}
+
 // Property Form Submission Handling
 const form = document.getElementById('property-form');
 const loadingSection = document.getElementById('loading-section');
@@ -143,6 +160,47 @@ form.addEventListener('submit', async (e) => {
 
   const address = document.getElementById('address').value;
   const loopnetUrl = document.getElementById('loopnet-url')?.value || '';
+
+  // Validate property address before proceeding
+  const validation = validatePropertyAddress(address);
+  if (!validation.valid) {
+    form.style.display = "none";
+    loadingSection.classList.remove('hidden');
+    loadingSection.style.display = 'block'; // Ensure visibility
+    loadingSection.offsetHeight; // Force reflow
+    resultsDiv.style.display = 'none';
+    resultsDiv.innerHTML = '';
+
+    progressBar.style.width = '100%';
+    scanText.textContent = "Error occurred: Invalid address.";
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    loadingSection.style.display = "none";
+    resultsDiv.innerHTML = `
+      <div class="ai-output"><pre>Error: ${validation.error}</pre></div>
+      <div class="button-container">
+        <button id="reset-btn" class="btn">Reset</button>
+      </div>
+    `;
+    resultsDiv.style.display = 'block';
+    resultsDiv.scrollTop = 0;
+    resultsDiv.classList.add('fade-in');
+
+    // Reset button handler for validation error
+    document.getElementById('reset-btn').addEventListener('click', () => {
+      form.reset();
+      form.style.display = 'block';
+      resultsDiv.style.display = 'none';
+      resultsDiv.innerHTML = '';
+      loadingSection.classList.add('hidden');
+      loadingSection.style.display = 'none'; // Ensure hidden
+      progressBar.style.width = '0%';
+      scanText.textContent = '';
+    });
+
+    return; // Stop further processing
+  }
 
   // Reset UI state
   form.style.display = "none";
@@ -195,11 +253,11 @@ form.addEventListener('submit', async (e) => {
 
     // Sanitize the result to prevent XSS and ensure proper display
     const sanitizedText = resultText
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+      .replace(/&/g, "&")
+      .replace(/</g, "<")
+      .replace(/>/g, ">")
+      .replace(/"/g, """)
+      .replace(/'/g, "'");
 
     // Complete the progress bar
     clearInterval(progressInterval);
@@ -275,3 +333,4 @@ form.addEventListener('submit', async (e) => {
     });
   }
 });
+```
