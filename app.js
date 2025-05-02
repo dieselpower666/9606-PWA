@@ -85,7 +85,7 @@ function drawBeams() {
         : (document.body.classList.contains('light-mode') 
           ? 'rgba(100,100,100,0.2)' 
           : 'rgba(255,255,255,0.2)');
-      beam.baseAlpha = Math.random() * 0.3 + 0.2;
+      baseAlpha: Math.random() * 0.3 + 0.2;
       beam.currentAlpha = beam.baseAlpha;
     }
   });
@@ -116,7 +116,7 @@ function toggleTheme() {
 
 // Property Address Validation Function
 function validatePropertyAddress(address) {
-  // Check if address is non-empty and has basic format (number + street name)
+  // Check if address is non-empty
   if (!address || address.trim() === "") {
     return { valid: false, error: "Address cannot be empty" };
   }
