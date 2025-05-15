@@ -181,7 +181,7 @@ form.addEventListener('submit', async (e) => {
   progressInterval = setInterval(updateProgress, 500);
 
   try {
-    const response = await fetch('https://alastor-n8n.onrender.com/webhook/Property_Analysis_AI_Workflow', {
+    const response = await fetch('https://alastor-n8n.onrender.com/webhook-test/06fc80b4-ee03-4bb4-8ed2-9030b42667cb', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
