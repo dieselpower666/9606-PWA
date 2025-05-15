@@ -18,21 +18,22 @@
       background-color: rgba(0, 0, 0, 0.7);
       color: #fff;
       font-family: 'Orbitron', sans-serif;
-      font-size: 1rem;
-      padding: 20px;
+      font-size: 1.1rem;
+      padding: 25px;
       width: 100%;
-      max-width: 90vw;
+      max-width: 1000px;
       margin: 40px auto;
-      border-radius: 12px;
-      max-height: 90vh;
+      border-radius: 15px;
+      max-height: 85vh;
       overflow-y: auto;
       overflow-x: hidden;
       white-space: pre-wrap;
       word-wrap: break-word;
       word-break: break-word;
-      line-height: 1.5;
+      line-height: 1.8;
       text-align: left;
       box-sizing: border-box;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
     #results pre, #results code {
@@ -44,8 +45,8 @@
 
     @media screen and (max-width: 768px) {
       #results {
-        font-size: 0.9rem;
-        padding: 16px;
+        font-size: 1rem;
+        padding: 20px;
         margin: 20px auto;
         max-width: 95vw;
       }
@@ -163,13 +164,13 @@
 <div class="container hidden" id="main-content">
   <h1 class="title">9606 Capital Property Analysis</h1>
 
-  <form id="property-form">
+   <form id="property-form">
     <input type="text" id="address" placeholder="Enter Property Address" required />
-    <input type="text" id="loopnet-url" placeholder="(Optional) Enter LoopNet URL" />
     <button type="submit">Initiate Scan</button>
   </form>
 
-  <p id="optional-note">(Optional) LoopNet URL highly recommended for deeper scan accuracy.</p>
+  <p id="poweredby-note">Powered by Polar Ice Labs</p>
+
 
   <!-- Progress and Scanning Words Section -->
   <div id="loading-section" class="hidden">
@@ -234,7 +235,18 @@ window.addEventListener('load', () => {
     }
   }
 });
+
+// Hide optional note when LoopNet URL is provided
+document.getElementById('loopnet-url').addEventListener('input', function() {
+  const optionalNote = document.getElementById('optional-note');
+  if (this.value.trim() !== '') {
+    optionalNote.style.display = 'none';
+  } else {
+    optionalNote.style.display = 'block';
+  }
+});
 </script>
 
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'939038916e07b074',t:'MTc0NjExMjM4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'939038916e07b074',t:'MTc0NjExMjM4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9393e874fd07b062',t:'MTc0NjE1MTA0OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
 </html>
